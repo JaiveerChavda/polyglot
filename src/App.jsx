@@ -9,11 +9,23 @@ function App() {
   const [sourceText, setSourceText] = useState('');
   const [selectedLanguage, setSelectedLanguage] = useState('fr');
 
-  const translate =  () => {
-    
+  const translate = async () => {
+
     const nextIsTranslated = !isTranslated;
 
     setIsTranslated(nextIsTranslated);
+
+    const response = await fetch('http://localhost:3000/translate', {
+      headers: {
+        "Content-Type": "application/json" // 2. Set the content type
+      },
+      method: "POST",
+      body: JSON.stringify({ sourceText })
+    });
+
+    const data = await response.json();
+
+    console.log(data);
 
     // you're logic here
     /**
@@ -41,7 +53,7 @@ function App() {
           <textarea id='source-text' name='source-text' className='bg-gray-200 placeholder:text-nuetral-800 w-full rounded-lg placeholder:font-poppins font-semibold placeholder:text-xl p-5'
             rows={5}
             placeholder='How are you?'
-            onChange={(e) => setSourceText(e.target.value)}  
+            onChange={(e) => setSourceText(e.target.value)}
           >
           </textarea>
 
@@ -54,7 +66,7 @@ function App() {
               <div className='space-y-1 font-bold text-xl'>
                 <div className='flex'>
                   <input type="radio" id="french" name="language" value="fr"
-                    checked={selectedLanguage === 'fr'} 
+                    checked={selectedLanguage === 'fr'}
                     onChange={(event) => setSelectedLanguage(event.target.value)}
                   />
                   <label className='ml-2 flex items-center gap-3' htmlFor="french">French <img src={frFlag} alt='french flag' />
@@ -63,7 +75,7 @@ function App() {
 
                 <div className='flex'>
                   <input type="radio" id="spanish" name="language" value="es"
-                    checked={selectedLanguage === 'es'} 
+                    checked={selectedLanguage === 'es'}
                     onChange={(event) => setSelectedLanguage(event.target.value)}
                   />
                   <label className='ml-2 flex items-center gap-3' htmlFor="spanish">Spanish <img src={spFlag} alt="spanish flag" /></label>
@@ -85,10 +97,10 @@ function App() {
           </div>
           }
 
-          <button type='submit' 
+          <button type='submit'
             className='font-bold text-xl bg-sky-800 text-white mx-auto block w-80 py-3 rounded-md cursor-pointer'
           >
-              {isTranslated ? 'Start Over' : 'Translate'}
+            {isTranslated ? 'Start Over' : 'Translate'}
           </button>
         </form>
       </main>
