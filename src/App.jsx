@@ -8,29 +8,42 @@ function App() {
   const [isTranslated, setIsTranslated] = useState(false);
   const [sourceText, setSourceText] = useState('');
   const [selectedLanguage, setSelectedLanguage] = useState('fr');
+  const [translation, setTranslation] = useState('...');
+  const [loading,setLoading] = useState(false);
 
   const translate = async () => {
 
-    const nextIsTranslated = !isTranslated;
+    setLoading(true);
 
-    setIsTranslated(nextIsTranslated);
+    try {
+      const response = await fetch('http://localhost:3000/translate', {
+        headers: {
+          "Content-Type": "application/json"
+        },
+        method: "POST",
+        body: JSON.stringify({ sourceText, selectedLanguage })
+      });
 
-    const response = await fetch('http://localhost:3000/translate', {
-      headers: {
-        "Content-Type": "application/json" // 2. Set the content type
-      },
-      method: "POST",
-      body: JSON.stringify({ sourceText })
-    });
+      if (!response.ok) {
+        throw new Error('Failed to translate text');
+      }
 
-    const data = await response.json();
+      const data = await response.json();
+      setTranslation(data.translation);
+      setIsTranslated(true);
+    } catch(error){
+      console.error(error);
+    } 
+    finally {
+      setLoading(false);
+    }
+  }
 
-    console.log(data);
-
-    // you're logic here
-    /**
-     * translate the user supplied source to selected language using openAI client. 
-     */
+  const startOver = () => {
+    setIsTranslated(false);
+    setSourceText('');
+    setTranslation('');
+    setSelectedLanguage('fr');
   }
 
   return (
@@ -44,7 +57,11 @@ function App() {
           }
           onSubmit={(e) => {
             e.preventDefault();
-            translate()
+            if(isTranslated){
+              startOver()
+            }else{
+              translate()
+            }
           }}
         >
 
@@ -53,6 +70,7 @@ function App() {
           <textarea id='source-text' name='source-text' className='bg-gray-200 placeholder:text-nuetral-800 w-full rounded-lg placeholder:font-poppins font-semibold placeholder:text-xl p-5'
             rows={5}
             placeholder='How are you?'
+            value={sourceText}
             onChange={(e) => setSourceText(e.target.value)}
           >
           </textarea>
@@ -93,14 +111,29 @@ function App() {
           }
 
           {isTranslated && <div id='translated_text' className='flex-1 bg-gray-200 p-5 text-xl font-semibold text-neutral-800 rounded-lg font-poppins'>
-            Comment allez-vous?
+            {loading ? (
+              <div className='flex items-center justify-center gap-2' aria-live='polite'>
+                <span className='h-3 w-3 animate-bounce rounded-full bg-sky-800 [animation-delay:-0.3s]' />
+                <span className='h-3 w-3 animate-bounce rounded-full bg-sky-800 [animation-delay:-0.15s]' />
+                <span className='h-3 w-3 animate-bounce rounded-full bg-sky-800' />
+                <span className='sr-only'>Translating...</span>
+              </div>
+            ) : (
+              translation
+            )}
           </div>
           }
 
           <button type='submit'
             className='font-bold text-xl bg-sky-800 text-white mx-auto block w-80 py-3 rounded-md cursor-pointer'
+            disabled={loading}
           >
-            {isTranslated ? 'Start Over' : 'Translate'}
+            {(loading && !isTranslated) ? 'Translating' : (isTranslated ? 'Start Over' : 'Translate')}
+            {loading && <div className='inline-flex items-center justify-center gap-2 ml-2' aria-live='polite'>
+                <span className='h-2 w-2 animate-bounce rounded-full bg-white [animation-delay:-0.3s]' />
+                <span className='h-2 w-2 animate-bounce rounded-full bg-white [animation-delay:-0.15s]' />
+                <span className='h-2 w-2 animate-bounce rounded-full bg-white' />
+              </div>}
           </button>
         </form>
       </main>
