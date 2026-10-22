@@ -2,7 +2,7 @@ import { useState } from 'react'
 import spFlag from './assets/sp-flag.png';
 import jpnFlag from './assets/jpn-flag.png'
 import frFlag from './assets/fr-flag.png';
-
+import { PaperAirplaneIcon } from '@heroicons/react/24/outline'
 
 function App() {
   const [isTranslated, setIsTranslated] = useState(false);
@@ -65,76 +65,99 @@ function App() {
           }}
         >
 
-          {/* source text */}
-          <label htmlFor="source-text" className='block font-bold text-xl text-sky-800 text-center'>{!isTranslated ? 'Text to translate 👇' : 'Original text'}</label>
-          <textarea id='source-text' name='source-text' className='bg-gray-200 placeholder:text-nuetral-800 w-full rounded-lg placeholder:font-poppins font-semibold placeholder:text-xl p-5'
-            rows={5}
-            placeholder='How are you?'
-            value={sourceText}
-            onChange={(e) => setSourceText(e.target.value)}
-          >
-          </textarea>
-
-          {isTranslated && <h3 className='font-bold text-xl text-sky-800 text-center'>Your translation 👇</h3>}
-
-          {/* select language */}
-          {!isTranslated &&
-            <fieldset>
-              <legend className='font-bold text-xl text-sky-800 text-center mb-6'>Select language</legend>
-              <div className='space-y-1 font-bold text-xl'>
-                <div className='flex'>
-                  <input type="radio" id="french" name="language" value="fr"
-                    checked={selectedLanguage === 'fr'}
-                    onChange={(event) => setSelectedLanguage(event.target.value)}
-                  />
-                  <label className='ml-2 flex items-center gap-3' htmlFor="french">French <img src={frFlag} alt='french flag' />
-                  </label>
-                </div>
-
-                <div className='flex'>
-                  <input type="radio" id="spanish" name="language" value="es"
-                    checked={selectedLanguage === 'es'}
-                    onChange={(event) => setSelectedLanguage(event.target.value)}
-                  />
-                  <label className='ml-2 flex items-center gap-3' htmlFor="spanish">Spanish <img src={spFlag} alt="spanish flag" /></label>
-                </div>
-
-                <div className='flex'>
-                  <input type="radio" id="japanese" name="language" value="ja"
-                    checked={selectedLanguage === 'ja'}
-                    onChange={(event) => setSelectedLanguage(event.target.value)}
-                  />
-                  <label className='ml-2 flex items-center gap-3' htmlFor="japanese">Japanese <img src={jpnFlag} alt="japanese flag" /></label>
-                </div>
-              </div>
-            </fieldset>
-          }
-
-          {isTranslated && <div id='translated_text' className='flex-1 bg-gray-200 p-5 text-xl font-semibold text-neutral-800 rounded-lg font-poppins'>
-            {loading ? (
-              <div className='flex items-center justify-center gap-2' aria-live='polite'>
-                <span className='h-3 w-3 animate-bounce rounded-full bg-sky-800 [animation-delay:-0.3s]' />
-                <span className='h-3 w-3 animate-bounce rounded-full bg-sky-800 [animation-delay:-0.15s]' />
-                <span className='h-3 w-3 animate-bounce rounded-full bg-sky-800' />
-                <span className='sr-only'>Translating...</span>
-              </div>
-            ) : (
-              translation
-            )}
+          {/* Note */}
+ 
+          <div className='bg-sky-800 rounded-lg font-medium text-xl text-white p-4'>
+            Select the language you 
+            me to translate into, type your text and hit send!
           </div>
-          }
 
-          <button type='submit'
-            className='font-bold text-xl bg-sky-800 text-white mx-auto block w-80 py-3 rounded-md cursor-pointer'
-            disabled={loading}
-          >
-            {(loading && !isTranslated) ? 'Translating' : (isTranslated ? 'Start Over' : 'Translate')}
-            {loading && <div className='inline-flex items-center justify-center gap-2 ml-2' aria-live='polite'>
-                <span className='h-2 w-2 animate-bounce rounded-full bg-white [animation-delay:-0.3s]' />
-                <span className='h-2 w-2 animate-bounce rounded-full bg-white [animation-delay:-0.15s]' />
-                <span className='h-2 w-2 animate-bounce rounded-full bg-white' />
-              </div>}
-          </button>
+          {/* {user role} */}
+          <div className='font-poppins text-xl font-medium p-4 bg-green-400 rounded-r-xl rounded-bl-xl'>
+            How are you?
+          </div>
+
+          {/* system */}
+          <div className='font-poppins text-xl font-medium text-white p-4 bg-sky-800 rounded-l-xl rounded-br-xl'>
+            Comment allez-vous?
+          </div>
+
+          {/* user source text + send button */}
+          <div className='space-y-5'>
+            <div className='relative'>
+              <textarea
+                id='source-text'
+                name='source-text'
+                value={sourceText}
+                onChange={(event) => setSourceText(event.target.value)}
+                placeholder=''
+                rows={3}
+                className='block min-h-28 w-full resize-none rounded-2xl border-3 border-slate-500 bg-slate-50 p-4 pr-16 text-xl font-semibold text-slate-800 outline-none transition focus:border-sky-700 focus:ring-2 focus:ring-sky-200'
+                aria-label='Text to translate'
+              />
+
+              <button
+                type='submit'
+                disabled={loading || !sourceText.trim()}
+                aria-label={isTranslated ? 'Start over' : 'Translate text'}
+                className='absolute bottom-5 right-5 rounded-lg p-1 text-green-500 transition hover:scale-110 hover:text-green-600 focus:outline-none focus:ring-2 focus:ring-green-300 disabled:cursor-not-allowed disabled:opacity-40'
+              >
+                <PaperAirplaneIcon className='size-8 -rotate-45 stroke-2' />
+              </button>
+            </div>
+
+            <fieldset className='flex flex-wrap items-center justify-center gap-5 sm:gap-10'>
+              <legend className='sr-only'>Choose a translation language</legend>
+
+              <label className='cursor-pointer'>
+                <input
+                  type='radio'
+                  name='language'
+                  value='fr'
+                  checked={selectedLanguage === 'fr'}
+                  onChange={(event) => setSelectedLanguage(event.target.value)}
+                  className='peer sr-only'
+                />
+                <img
+                  src={frFlag}
+                  alt='French'
+                  className='w-20 rounded-sm border-2 border-slate-400 object-cover shadow-sm transition peer-checked:border-sky-700 peer-checked:ring-4 peer-checked:ring-sky-200 peer-focus-visible:ring-4 peer-focus-visible:ring-sky-200 sm:w-24'
+                />
+              </label>
+
+              <label className='cursor-pointer'>
+                <input
+                  type='radio'
+                  name='language'
+                  value='es'
+                  checked={selectedLanguage === 'es'}
+                  onChange={(event) => setSelectedLanguage(event.target.value)}
+                  className='peer sr-only'
+                />
+                <img
+                  src={spFlag}
+                  alt='Spanish'
+                  className='w-20 rounded-sm border-2 border-slate-400 object-cover shadow-sm transition peer-checked:border-sky-700 peer-checked:ring-4 peer-checked:ring-sky-200 peer-focus-visible:ring-4 peer-focus-visible:ring-sky-200 sm:w-24'
+                />
+              </label>
+
+              <label className='cursor-pointer'>
+                <input
+                  type='radio'
+                  name='language'
+                  value='ja'
+                  checked={selectedLanguage === 'ja'}
+                  onChange={(event) => setSelectedLanguage(event.target.value)}
+                  className='peer sr-only'
+                />
+                <img
+                  src={jpnFlag}
+                  alt='Japanese'
+                  className='w-20 rounded-sm border-2 border-slate-400 object-contain shadow-sm transition peer-checked:border-sky-700 peer-checked:ring-4 peer-checked:ring-sky-200 peer-focus-visible:ring-4 peer-focus-visible:ring-sky-200 sm:w-24'
+                />
+              </label>
+            </fieldset>
+          </div>
         </form>
       </main>
     </>

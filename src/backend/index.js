@@ -47,7 +47,7 @@ Strictly adhere to the following rules:
       model: process.env.AI_MODEL || 'gpt-4o-mini',
       instructions: systemPrompt,
       input: userPrompt,
-      temperature: 0.5,
+      temperature: 0.3,
       stream: false
     });
 
