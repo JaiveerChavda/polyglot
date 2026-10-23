@@ -9,10 +9,12 @@ function App() {
   const [selectedLanguage, setSelectedLanguage] = useState('fr');
   const [loading,setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
+  const [error,setError] = useState(null);
 
   const translate = async () => {
 
     setLoading(true);
+    setError(null);
     setSourceText('');
     const userMessage = {
       role: 'user',
@@ -32,7 +34,18 @@ function App() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to translate text');
+        let errorMessage = 'The translation request failed.';
+
+        try {
+          const errorData = await response.json();
+          if (errorData.error) {
+            errorMessage = errorData.error;
+          }
+        } catch {
+          // The server may be down or may have returned a non-JSON error page.
+        }
+
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
@@ -44,6 +57,11 @@ function App() {
 
     } catch(error){
       console.error(error);
+      setError(
+        error instanceof TypeError
+          ? 'Unable to reach the translation server. Please try again.'
+          : error.message || 'Something went wrong while translating.'
+      );
     } 
     finally {
       setLoading(false);
@@ -56,10 +74,7 @@ function App() {
       <main className='m-6 p-4 rounded-2xl outline-4 outline-slate-700'>
         <form
           className='flex flex-col max-w-md mx-auto space-y-6'
-          style={{
-            minHeight: '100%'
-          }
-          }
+          style={{minHeight: '100%'}}
           onSubmit={(e) => {
             e.preventDefault();
               translate()
@@ -98,6 +113,10 @@ function App() {
                 <span className='h-3 w-3 animate-bounce rounded-full bg-white' />
             </div>
           </div>}
+
+          {error && <div className='border-dotted border-2 border-red-500 rounded-lg text-red-500 p-4 mb-6'>
+              {error}
+            </div>}
 
           {/* user source text + send button */}
           <div className='space-y-5'>
