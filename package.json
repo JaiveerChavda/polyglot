@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "node --watch --env-file=.env src/backend/index.js"
+    "start": "node src/backend/index.js"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
