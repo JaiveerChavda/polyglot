@@ -25,7 +25,7 @@ function App() {
     setMessages(prev => [...prev, userMessage]);
     
     try {
-      const response = await fetch('http://localhost:3000/translate', {
+      const response = await fetch('/api/translate', {
         headers: {
           "Content-Type": "application/json"
         },
