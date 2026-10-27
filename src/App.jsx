@@ -161,11 +161,11 @@ function App() {
               </button>
 
               <div ref={languageRowRef} className='min-w-0 flex-1 overflow-x-auto scroll-smooth'>
-                <fieldset className='flex w-max min-w-full items-center justify-start gap-5 px-2 py-4 sm:gap-10'>
+                <fieldset className='flex w-max min-w-full items-center justify-start gap-5 px-2 py-4'>
                   <legend className='sr-only'>Choose a translation language</legend>
 
                   {Object.entries(languages).map(([code,name]) => (
-                    <label key={code} className='shrink-0 cursor-pointer rounded-lg border-2 px-3 py-1 border-slate-400 shadow-sm transition peer-checked:border-sky-700 peer-checked:ring-4 peer-checked:ring-sky-200 peer-focus-visible:ring-4 peer-focus-visible:ring-sky-200' title={name}>
+                    <label key={code} className='shrink-0 cursor-pointer' title={name}>
                       <input
                         type='radio'
                         name='language'
@@ -174,7 +174,7 @@ function App() {
                         onChange={(event) => setSelectedLanguage(event.target.value)}
                         className='peer sr-only'
                       />
-                      <span className=''>
+                      <span className='rounded-lg border-2 px-4 py-1 border-slate-400 shadow-sm transition peer-checked:border-sky-700 peer-checked:ring-4 peer-checked:ring-sky-200 peer-focus-visible:ring-4 peer-focus-visible:ring-sky-200'>
                         {name}
                       </span>
                     </label>
