@@ -1,8 +1,6 @@
-import React, { useState } from 'react'
-import spFlag from './assets/sp-flag.png';
-import jpnFlag from './assets/jpn-flag.png'
-import frFlag from './assets/fr-flag.png';
-import { PaperAirplaneIcon } from '@heroicons/react/24/outline'
+import React, { useRef, useState } from 'react'
+import { ChevronLeftIcon, ChevronRightIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline'
+import languages from '../data/languages.json';
 
 function App() {
   const [sourceText, setSourceText] = useState('');
@@ -10,6 +8,14 @@ function App() {
   const [loading,setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
   const [error,setError] = useState(null);
+  const languageRowRef = useRef(null);
+
+  const scrollLanguages = (direction) => {
+    languageRowRef.current?.scrollBy({
+      left: direction * 220,
+      behavior: 'smooth',
+    });
+  };
 
   const translate = async () => {
 
@@ -144,26 +150,37 @@ function App() {
             </div>
 
             {/* language selection row */}
-            <fieldset className='flex flex-wrap items-center justify-center gap-5 sm:gap-10'>
-              <legend className='sr-only'>Choose a translation language</legend>
+            <div className='relative mt-6 flex items-center gap-1'>
+              <button
+                type='button'
+                onClick={() => scrollLanguages(-1)}
+                aria-label='Scroll languages left'
+                className='shrink-0 rounded-full p-1 text-slate-500 transition hover:bg-slate-100 hover:text-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-200'
+              >
+                <ChevronLeftIcon className='size-5' />
+              </button>
 
-              <label className='cursor-pointer' title='French'>
-                <input
-                  type='radio'
-                  name='language'
-                  value='fr'
-                  checked={selectedLanguage === 'fr'}
-                  onChange={(event) => setSelectedLanguage(event.target.value)}
-                  className='peer sr-only'
-                />
-                <img
-                  src={frFlag}
-                  alt='French'
-                  className='w-20 rounded-sm border-2 border-slate-400 object-cover shadow-sm transition peer-checked:border-sky-700 peer-checked:ring-4 peer-checked:ring-sky-200 peer-focus-visible:ring-4 peer-focus-visible:ring-sky-200'
-                />
-              </label>
+              <div ref={languageRowRef} className='min-w-0 flex-1 overflow-x-auto scroll-smooth'>
+                <fieldset className='flex w-max min-w-full items-center justify-start gap-5 px-2 py-4 sm:gap-10'>
+                  <legend className='sr-only'>Choose a translation language</legend>
 
-              <label className='cursor-pointer' title='Spanish'>
+                  {Object.entries(languages).map(([code,name]) => (
+                    <label key={code} className='shrink-0 cursor-pointer rounded-lg border-2 px-3 py-1 border-slate-400 shadow-sm transition peer-checked:border-sky-700 peer-checked:ring-4 peer-checked:ring-sky-200 peer-focus-visible:ring-4 peer-focus-visible:ring-sky-200' title={name}>
+                      <input
+                        type='radio'
+                        name='language'
+                        value={code}
+                        checked={selectedLanguage === code}
+                        onChange={(event) => setSelectedLanguage(event.target.value)}
+                        className='peer sr-only'
+                      />
+                      <span className=''>
+                        {name}
+                      </span>
+                    </label>
+                  ))}
+
+                  {/* <label className='cursor-pointer' title='Spanish'>
                 <input
                   type='radio'
                   name='language'
@@ -193,8 +210,19 @@ function App() {
                   alt='Japanese'
                   className='w-20 rounded-sm border-2 border-slate-400 object-contain shadow-sm transition peer-checked:border-sky-700 peer-checked:ring-4 peer-checked:ring-sky-200 peer-focus-visible:ring-4 peer-focus-visible:ring-sky-200'
                 />
-              </label>
-            </fieldset>
+                  </label> */}
+                </fieldset>
+              </div>
+
+              <button
+                type='button'
+                onClick={() => scrollLanguages(1)}
+                aria-label='Scroll languages right'
+                className='shrink-0 rounded-full p-1 text-slate-500 transition hover:bg-slate-100 hover:text-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-200'
+              >
+                <ChevronRightIcon className='size-5' />
+              </button>
+            </div>
           </div>
         </form>
       </main>
